@@ -1,4 +1,6 @@
--- task-1 Створіть базу даних для керування бібліотекою книг згідно зі структурою
+/*
+task-1 Створіть базу даних для керування бібліотекою книг згідно зі структурою
+*/
 
 -- a)
 CREATE SCHEMA IF NOT EXISTS `LibraryManagement`;
@@ -48,7 +50,9 @@ CREATE TABLE IF NOT EXISTS borrowed_books (
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- task-2 Заповніть таблиці простими видуманими тестовими даними
+/* 
+task-2 Заповніть таблиці простими видуманими тестовими даними
+*/
 
 INSERT INTO authors(author_name) 
 VALUES ('Jean Louis De Lolme'), ('Josephine Quintero'), ('Rosemary Kirstein');
@@ -73,7 +77,9 @@ VALUES
     (2, 2, '2025-11-05', NULL),
     (3, 1, '2025-11-12', '2025-11-20');
 
--- task-3 INNER JOIN на схемі розгонутій раніше
+/* 
+task-3 INNER JOIN Об'єднання таблиць
+*/
 
 USE mydb;
 SELECT 
@@ -94,4 +100,46 @@ INNER JOIN products   AS p ON od.product_id = p.id
 INNER JOIN categories AS cat ON p.category_id = cat.id
 INNER JOIN suppliers  AS sup ON p.supplier_id = sup.id;
 
+/*
+task-4 експерименти з JOIN 
+*/
 
+-- 4.1 Підрахунок рядків 
+SELECT COUNT(*) AS count_rows
+FROM order_details AS od
+INNER JOIN orders     AS o ON od.order_id = o.id
+INNER JOIN customers  AS c ON o.customer_id = c.id
+INNER JOIN employees  AS e ON o.employee_id = e.employee_id
+INNER JOIN shippers   AS s ON o.shipper_id = s.id
+INNER JOIN products   AS p ON od.product_id = p.id
+INNER JOIN categories AS cat ON p.category_id = cat.id;
+
+-- 4.2 Заміна JOIN
+SELECT COUNT(*) AS count_rows
+FROM order_details AS od
+INNER JOIN orders     AS o ON od.order_id = o.id
+RIGHT JOIN customers  AS c ON o.customer_id = c.id
+INNER JOIN employees  AS e ON o.employee_id = e.employee_id
+INNER JOIN shippers   AS s ON o.shipper_id = s.id
+LEFT JOIN products   AS p ON od.product_id = p.id
+INNER JOIN categories AS cat ON p.category_id = cat.id;
+
+-- 4.3 Фільтрування
+SELECT 
+    o.id AS order_id,
+    o.date AS order_date,
+    c.name AS customer,
+    e.first_name AS employee,
+    p.name AS product,
+    cat.name AS category,
+    sup.name AS supplier,
+    s.name AS shipper
+FROM order_details AS od
+INNER JOIN orders     AS o ON od.order_id = o.id
+INNER JOIN customers  AS c ON o.customer_id = c.id
+INNER JOIN employees  AS e ON o.employee_id = e.employee_id
+INNER JOIN shippers   AS s ON o.shipper_id = s.id
+INNER JOIN products   AS p ON od.product_id = p.id
+INNER JOIN categories AS cat ON p.category_id = cat.id
+INNER JOIN suppliers  AS sup ON p.supplier_id = sup.id
+WHERE e.employee_id > 3 AND e.employee_id <= 10;
